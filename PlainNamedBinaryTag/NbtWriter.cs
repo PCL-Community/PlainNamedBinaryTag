@@ -11,11 +11,15 @@ namespace PlainNamedBinaryTag
 
         public NbtWriter(string path, bool compressed)
         {
+            FileStream fs;
             if (!File.Exists(path))
             {
-                File.Create(path);
+                fs = File.Create(path);
             }
-            var fs = new FileStream(path, FileMode.Open, FileAccess.Write, FileShare.Write);
+            else
+            {
+                fs = new FileStream(path, FileMode.Open, FileAccess.Write, FileShare.None);
+            }
             if (compressed)
             {
                 _stream = new GZipStream(fs, CompressionMode.Compress);

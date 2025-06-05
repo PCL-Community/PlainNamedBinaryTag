@@ -17,7 +17,7 @@ namespace PlainNamedBinaryTag
             {
                 throw new FileNotFoundException("NBT binary file is not found");
             }
-            var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
             if (compressed == null)
             {
                 compressed = Checker.IsStreamInGzipFormat(fs);
