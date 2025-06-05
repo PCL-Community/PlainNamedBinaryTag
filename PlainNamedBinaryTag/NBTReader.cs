@@ -32,6 +32,22 @@ namespace PlainNamedBinaryTag
             }
         }
 
+        public NbtReader(Stream stream, ref bool? compressed)
+        {
+            if (compressed == null)
+            {
+                compressed = Checker.IsStreamInGzipFormat(stream);
+            }
+            if ((bool)compressed)
+            {
+                _stream = new GZipStream(stream, CompressionMode.Decompress);
+            }
+            else
+            {
+                _stream = stream;
+            }
+        }
+
         public object ReadNbt(out string resultName, out NbtType resultType, bool hasName = true)
         {
             resultType = ReadNbtType();
