@@ -16,15 +16,16 @@ namespace PlainNamedBinaryTag.Utils
             {
                 throw new ArgumentNullException("stream is null");
             }
-            if (!stream.CanRead)
+            if (!stream.CanRead || !stream.CanSeek)
             {
-                throw new ArgumentException("The stream is not readable");
+                throw new ArgumentException("Can not determine the stream");
             }
             try
             {
+                var curStreamPos = stream.Position;
                 var b1 = stream.ReadByte();
                 var b2 = stream.ReadByte();
-                stream.Seek(0, SeekOrigin.Begin);
+                stream.Seek(curStreamPos, SeekOrigin.Begin);
                 return b1 == 0x1f && b2 == 0x8b;
             }
             catch
