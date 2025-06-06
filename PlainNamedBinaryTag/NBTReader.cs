@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
-
 using PlainNamedBinaryTag.Utils;
 
 namespace PlainNamedBinaryTag
@@ -90,13 +88,13 @@ namespace PlainNamedBinaryTag
             return ReadBigEndianNumber(8, BitConverter.ToDouble);
         }
 
-        private string ReadStringPayload() //TODO: JVMModifiedUTF8
+        private string ReadStringPayload()
         {
             var length = ReadBigEndianNumber(2, BitConverter.ToUInt16);
             var buffer = new byte[length];
             if (_stream.Read(buffer, 0, length) != length)
                 throw new EndOfStreamException();
-            return Encoding.UTF8.GetString(buffer);
+            return JvmModifiedUtf8.GetString(buffer);
         }
 
         private NbtInt8Array ReadInt8ArrayPayload()

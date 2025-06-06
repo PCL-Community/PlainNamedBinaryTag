@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
+using PlainNamedBinaryTag.Utils;
 
 namespace PlainNamedBinaryTag
 {
@@ -87,9 +87,9 @@ namespace PlainNamedBinaryTag
             WriteBigEndianNumber(value, BitConverter.GetBytes);
         }
 
-        private void WriteStringPayload(string value) //TODO: JVMModifiedUTF8
+        private void WriteStringPayload(string value)
         {
-            var buffer = Encoding.UTF8.GetBytes(value);
+            var buffer = JvmModifiedUtf8.GetBytes(value);
             if (buffer.Length > ushort.MaxValue)
                 throw new ArgumentException("String too long", nameof(value));
             WriteBigEndianNumber((ushort)buffer.Length, BitConverter.GetBytes);
