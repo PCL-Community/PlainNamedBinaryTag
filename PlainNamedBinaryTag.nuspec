@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>PlainNamedBinaryTag</id>
+    <version>1.0.0</version>
+    <authors>PCL Community</authors>
+    <projectUrl>https://github.com/PCL-Community/PlainNamedBinaryTag</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="expression">Apache-2.0</license>
+    <copyright>Copyright © PCL Community 2025</copyright>
+    <description>A NuGet package that simplifies reading and writing NBT data.</description>
+    <tags>NBT Minecraft</tags>
+  </metadata>
+  <files>
+    <file src="PlainNamedBinaryTag\bin\Release\PlainNamedBinaryTag.dll" target="lib\net462\" />
+  </files>
+</package>

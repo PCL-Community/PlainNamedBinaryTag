@@ -1,0 +1,29 @@
+name: Release NuGet Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-publish:
+    runs-on: windows-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: 恢复依赖
+        run: nuget restore PlainNamedBinaryTag.sln
+
+      - name: 构建项目
+        run: msbuild PlainNamedBinaryTag/PlainNamedBinaryTag.csproj /p:Configuration=Release
+
+      - name: 打包 NuGet
+        run: nuget pack PlainNamedBinaryTag.nuspec
+
+      - name: 发布到 NuGet
+        run: nuget push PlainNamedBinaryTag.*.nupkg -ApiKey ${{ secrets.NUGET_API_KEY }} -Source https://api.nuget.org/v3/index.json
