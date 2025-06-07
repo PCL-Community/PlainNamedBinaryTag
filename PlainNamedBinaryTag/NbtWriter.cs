@@ -60,7 +60,7 @@ namespace PlainNamedBinaryTag
             var name = value.Attribute("Name");
             if (!(name is null))
                 _writer.Write(name.Value);
-            WriteDynamicNbtXml(value);
+            WriteDynamicNbtXml(type, value);
         }
 
         #region "write impl methods"
@@ -163,11 +163,12 @@ namespace PlainNamedBinaryTag
 
         private void WriteListNbtXml(XElement element)
         {
-            WriteNbtType(ParseToNbtType(element.Attribute("ContentType").Value));
+            var contentType = ParseToNbtType(element.Attribute("ContentType").Value);
+            WriteNbtType(contentType);
             var elementsArray = element.Elements().ToArray();
             _writer.Write(elementsArray.Length);
             foreach (var value in elementsArray)
-                WriteDynamicNbtXml(value);
+                WriteDynamicNbtXml(contentType, value);
         }
 
         private void WriteCompoundNbtXml(XElement element)
@@ -180,14 +181,13 @@ namespace PlainNamedBinaryTag
                     throw new InvalidDataException();
                 WriteNbtType(type);
                 _writer.Write(child.Attribute("Name").Value);
-                WriteDynamicNbtXml(child);
+                WriteDynamicNbtXml(type, child);
             }
             WriteNbtType(NbtType.TEnd);
         }
 
-        private void WriteDynamicNbtXml(XElement element)
+        private void WriteDynamicNbtXml(NbtType type, XElement element)
         {
-            var type = (NbtType)Enum.Parse(typeof(NbtType), element.Name.ToString());
             var firstTextValue = new Lazy<string>(() => GetFirstTextContent(element));
             switch (type)
             {

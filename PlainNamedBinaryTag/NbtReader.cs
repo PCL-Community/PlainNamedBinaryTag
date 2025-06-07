@@ -50,7 +50,8 @@ namespace PlainNamedBinaryTag
 
         public XElement ReadNbtAsXml(out NbtType resultType, bool hasName = true)
         {
-            var result = new XElement((resultType = ReadNbtType()).ToString());
+            resultType = ReadNbtType();
+            var result = new XElement(resultType.ToString());
             if (hasName)
                 result.Add(new XAttribute("Name", _reader.ReadString()));
             ReadDynamicIntoXml(resultType, result);
