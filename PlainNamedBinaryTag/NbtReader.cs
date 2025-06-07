@@ -41,13 +41,6 @@ namespace PlainNamedBinaryTag
             _reader = new NbtBinaryReader(stream);
         }
 
-        public object ReadNbt(out string resultName, out NbtType resultType, bool hasName = true)
-        {
-            resultType = ReadNbtType();
-            resultName = hasName ? _reader.ReadString() : null;
-            return ReadDynamicPayload(resultType);
-        }
-
         public XElement ReadNbtAsXml(out NbtType resultType, bool hasName = true)
         {
             resultType = ReadNbtType();
@@ -57,84 +50,6 @@ namespace PlainNamedBinaryTag
             ReadDynamicIntoXml(resultType, result);
             return result;
         }
-
-        #region "read impl methods"
-
-        private NbtInt8Array ReadInt8ArrayPayload()
-        {
-            var length = _reader.ReadInt32();
-            var result = new NbtInt8Array(length);
-            for (int i = 0; i < length; i++)
-                result.Add(_reader.ReadSByte());
-            return result;
-        }
-
-        private NbtInt32Array ReadInt32ArrayPayload()
-        {
-            var length = _reader.ReadInt32();
-            var result = new NbtInt32Array(length);
-            for (int i = 0; i < length; i++)
-                result.Add(_reader.ReadInt32());
-            return result;
-        }
-
-        private NbtInt64Array ReadInt64ArrayPayload()
-        {
-            var length = _reader.ReadInt32();
-            var result = new NbtInt64Array(length);
-            for (int i = 0; i < length; i++)
-                result.Add(_reader.ReadInt64());
-            return result;
-        }
-
-        private NbtList ReadListPayload()
-        {
-            var type = ReadNbtType();
-            var length = _reader.ReadInt32();
-            var result = new NbtList(type, length);
-            for (int i = 0; i < length; i++)
-                result.AddWithNbtTypeCheck(ReadDynamicPayload(type));
-            return result;
-        }
-
-        private NbtCompound ReadCompoundPayload()
-        {
-            NbtType type;
-            var result = new NbtCompound();
-            while ((type = ReadNbtType()) != NbtType.TEnd)
-                result.Add(_reader.ReadString(), new TypedNbtObject(type, ReadDynamicPayload(type)));
-            return result;
-        }
-
-        private NbtType ReadNbtType()
-        {
-            var typedResult = (NbtType)_reader.ReadByte();
-            if (!Enum.IsDefined(typeof(NbtType), typedResult))
-                throw new InvalidDataException();
-            return typedResult;
-        }
-
-        private object ReadDynamicPayload(NbtType type)
-        {
-            switch (type)
-            {
-                case NbtType.TInt8: return _reader.ReadSByte();
-                case NbtType.TInt16: return _reader.ReadInt16();
-                case NbtType.TInt32: return _reader.ReadInt32();
-                case NbtType.TInt64: return _reader.ReadInt64();
-                case NbtType.TFloat32: return _reader.ReadSingle();
-                case NbtType.TFloat64: return _reader.ReadDouble();
-                case NbtType.TInt8Array: return ReadInt8ArrayPayload();
-                case NbtType.TString: return _reader.ReadString();
-                case NbtType.TList: return ReadListPayload();
-                case NbtType.TCompound: return ReadCompoundPayload();
-                case NbtType.TInt32Array: return ReadInt32ArrayPayload();
-                case NbtType.TInt64Array: return ReadInt64ArrayPayload();
-                default: throw new InvalidDataException();
-            }
-        }
-
-        #endregion
 
         #region xml read impl methods
 
@@ -182,6 +97,14 @@ namespace PlainNamedBinaryTag
                 ReadDynamicIntoXml(type, child);
                 element.Add(child);
             }
+        }
+
+        private NbtType ReadNbtType()
+        {
+            var typedResult = (NbtType)_reader.ReadByte();
+            if (!Enum.IsDefined(typeof(NbtType), typedResult))
+                throw new InvalidDataException();
+            return typedResult;
         }
 
         private void ReadDynamicIntoXml(NbtType type, XElement element)
