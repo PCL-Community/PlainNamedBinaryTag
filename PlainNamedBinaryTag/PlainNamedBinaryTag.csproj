@@ -49,6 +49,8 @@
     <Compile Include="NbtType.cs" />
     <Compile Include="Utils\Checker.cs" />
     <Compile Include="Utils\JvmModifiedUtf8.cs" />
+    <Compile Include="Utils\NbtBinaryReader.cs" />
+    <Compile Include="Utils\NbtBinaryWriter.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
