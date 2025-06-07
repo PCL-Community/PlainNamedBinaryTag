@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("PlainNamedBinaryTag")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Plain Named Binary Tag")]
+[assembly: AssemblyDescription("Plain Named Binary Tag")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("PlainNamedBinaryTag")]
-[assembly: AssemblyCopyright("Copyright ©  2025")]
+[assembly: AssemblyCompany("PCL Community")]
+[assembly: AssemblyProduct("Plain Named Binary Tag")]
+[assembly: AssemblyCopyright("Copyright © PCL Community 2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

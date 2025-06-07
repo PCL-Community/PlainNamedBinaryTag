@@ -52,6 +52,5 @@
     <Compile Include="Utils\NbtBinaryReader.cs" />
     <Compile Include="Utils\NbtBinaryWriter.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
