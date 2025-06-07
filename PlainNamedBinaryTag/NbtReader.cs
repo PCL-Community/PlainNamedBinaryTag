@@ -142,21 +142,21 @@ namespace PlainNamedBinaryTag
         {
             var length = _reader.ReadInt32();
             for (int i = 0; i < length; i++)
-                element.Add(_reader.ReadSByte());
+                element.Add(new XElement(NbtType.TInt8.ToString(), _reader.ReadSByte()));
         }
 
         private void ReadInt32ArrayIntoXml(XElement element)
         {
             var length = _reader.ReadInt32();
             for (int i = 0; i < length; i++)
-                element.Add(_reader.ReadInt32());
+                element.Add(new XElement(NbtType.TInt32.ToString(), _reader.ReadInt32()));
         }
 
         private void ReadInt64ArrayIntoXml(XElement element)
         {
             var length = _reader.ReadInt32();
             for (int i = 0; i < length; i++)
-                element.Add(_reader.ReadInt64());
+                element.Add(new XElement(NbtType.TInt64.ToString(), _reader.ReadInt64()));
         }
 
         private void ReadListIntoXml(XElement element)
