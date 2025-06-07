@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Compression;
+using System.Xml.Linq;
 using PlainNamedBinaryTag.Utils;
 
 namespace PlainNamedBinaryTag
@@ -45,6 +46,15 @@ namespace PlainNamedBinaryTag
             resultType = ReadNbtType();
             resultName = hasName ? _reader.ReadString() : null;
             return ReadDynamicPayload(resultType);
+        }
+
+        public XElement ReadNbtAsXml(out NbtType resultType, bool hasName = true)
+        {
+            var result = new XElement((resultType = ReadNbtType()).ToString());
+            if (hasName)
+                result.Add(new XAttribute("Name", _reader.ReadString()));
+            ReadDynamicIntoXml(resultType, result);
+            return result;
         }
 
         #region "read impl methods"
@@ -119,6 +129,75 @@ namespace PlainNamedBinaryTag
                 case NbtType.TCompound: return ReadCompoundPayload();
                 case NbtType.TInt32Array: return ReadInt32ArrayPayload();
                 case NbtType.TInt64Array: return ReadInt64ArrayPayload();
+                default: throw new InvalidDataException();
+            }
+        }
+
+        #endregion
+
+        #region xml read impl methods
+
+        private void ReadInt8ArrayIntoXml(XElement element)
+        {
+            var length = _reader.ReadInt32();
+            for (int i = 0; i < length; i++)
+                element.Add(_reader.ReadSByte());
+        }
+
+        private void ReadInt32ArrayIntoXml(XElement element)
+        {
+            var length = _reader.ReadInt32();
+            for (int i = 0; i < length; i++)
+                element.Add(_reader.ReadInt32());
+        }
+
+        private void ReadInt64ArrayIntoXml(XElement element)
+        {
+            var length = _reader.ReadInt32();
+            for (int i = 0; i < length; i++)
+                element.Add(_reader.ReadInt64());
+        }
+
+        private void ReadListIntoXml(XElement element)
+        {
+            var type = ReadNbtType();
+            element.Add(new XAttribute("ContentType", type));
+            var length = _reader.ReadInt32();
+            for (int i = 0; i < length; i++)
+            {
+                var child = new XElement(type.ToString());
+                ReadDynamicIntoXml(type, child);
+                element.Add(child);
+            }
+        }
+
+        private void ReadCompoundIntoXml(XElement element)
+        {
+            NbtType type;
+            while ((type = ReadNbtType()) != NbtType.TEnd)
+            {
+                var child = new XElement(type.ToString());
+                child.Add(new XAttribute("Name", _reader.ReadString()));
+                ReadDynamicIntoXml(type, child);
+                element.Add(child);
+            }
+        }
+
+        private void ReadDynamicIntoXml(NbtType type, XElement element)
+        {
+            switch (type) {
+                case NbtType.TInt8: element.Add(_reader.ReadSByte()); break;
+                case NbtType.TInt16: element.Add(_reader.ReadInt16()); break;
+                case NbtType.TInt32: element.Add(_reader.ReadInt32()); break;
+                case NbtType.TInt64: element.Add(_reader.ReadInt64()); break;
+                case NbtType.TFloat32: element.Add(_reader.ReadSingle()); break;
+                case NbtType.TFloat64: element.Add(_reader.ReadDouble()); break;
+                case NbtType.TInt8Array: ReadInt8ArrayIntoXml(element); break;
+                case NbtType.TString: element.Add(_reader.ReadString()); break;
+                case NbtType.TList: ReadListIntoXml(element); break;
+                case NbtType.TCompound: ReadCompoundIntoXml(element); break;
+                case NbtType.TInt32Array: ReadInt32ArrayIntoXml(element); break;
+                case NbtType.TInt64Array: ReadInt64ArrayIntoXml(element); break;
                 default: throw new InvalidDataException();
             }
         }
