@@ -22,6 +22,12 @@ jobs:
       - name: 构建项目
         run: msbuild PlainNamedBinaryTag/PlainNamedBinaryTag.csproj /p:Configuration=Release
 
+      - name: 设置 nuspec 版本号
+        run: |
+          $version = "${{ github.ref_name }}"
+          $version = $version.TrimStart("v")
+          (Get-Content PlainNamedBinaryTag.nuspec) -replace '<version>.*</version>', "<version>$version</version>" | Set-Content PlainNamedBinaryTag.nuspec
+
       - name: 打包 NuGet
         run: nuget pack PlainNamedBinaryTag.nuspec
 
