@@ -76,9 +76,9 @@ namespace PlainNamedBinaryTag
             return result;
         }
 
-        private NbtList ReadListPayload(out NbtType type)
+        private NbtList ReadListPayload()
         {
-            type = ReadNbtType();
+            var type = ReadNbtType();
             var length = _reader.ReadInt32();
             var result = new NbtList(type, length);
             for (int i = 0; i < length; i++)
@@ -115,7 +115,7 @@ namespace PlainNamedBinaryTag
                 case NbtType.TFloat64: return _reader.ReadDouble();
                 case NbtType.TInt8Array: return ReadInt8ArrayPayload();
                 case NbtType.TString: return _reader.ReadString();
-                case NbtType.TList: return ReadListPayload(out _);
+                case NbtType.TList: return ReadListPayload();
                 case NbtType.TCompound: return ReadCompoundPayload();
                 case NbtType.TInt32Array: return ReadInt32ArrayPayload();
                 case NbtType.TInt64Array: return ReadInt64ArrayPayload();
