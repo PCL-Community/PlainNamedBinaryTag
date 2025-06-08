@@ -46,7 +46,6 @@ namespace PlainNamedBinaryTag
         /// Specifies whether to decompress the stream content.
         /// Set to null for automatic detection
         /// </param>
-        /// <exception cref="FileNotFoundException" />
         public NbtReader(Stream stream, ref bool? compressed)
         {
             if (compressed == null)

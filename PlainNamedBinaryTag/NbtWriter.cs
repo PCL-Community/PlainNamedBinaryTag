@@ -17,6 +17,7 @@ namespace PlainNamedBinaryTag
         /// </summary>
         /// <param name="path">The path of the file to write</param>
         /// <param name="compressed">Whether to compress the file content</param>
+        /// <exception cref="IOException" />
         public NbtWriter(string path, bool compressed)
         {
             Stream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
