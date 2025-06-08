@@ -20,22 +20,22 @@ namespace PlainNamedBinaryTag.Utils
         public NbtBinaryReader(Stream input, Encoding encoding, bool leaveOpen) : base(input, encoding, leaveOpen) { }
 
         /// <summary>NotSupported</summary>
-        public override int PeekChar() { throw new NotSupportedException(); }
+        public override int PeekChar() => throw new NotSupportedException();
 
         /// <summary>NotSupported</summary>
-        public override int Read() { throw new NotSupportedException(); }
+        public override int Read() => throw new NotSupportedException();
 
         /// <summary>NotSupported</summary>
-        public override int Read(char[] buffer, int index, int count) { throw new NotSupportedException(); }
+        public override int Read(char[] buffer, int index, int count) => throw new NotSupportedException();
 
         /// <summary>NotSupported</summary>
-        public override char ReadChar() { throw new NotSupportedException(); }
+        public override char ReadChar() => throw new NotSupportedException();
 
         /// <summary>NotSupported</summary>
-        public override char[] ReadChars(int count) { throw new NotSupportedException(); }
+        public override char[] ReadChars(int count) => throw new NotSupportedException();
 
         /// <summary>NotSupported</summary>
-        public override decimal ReadDecimal() { throw new NotSupportedException(); }
+        public override decimal ReadDecimal() => throw new NotSupportedException();
 
         public override int Read(byte[] buffer, int index, int count)
         {

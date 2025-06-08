@@ -9,8 +9,11 @@ namespace PlainNamedBinaryTag.Utils
         /// <summary>
         /// Encode JvmModifiedUtf8
         /// </summary>
+        /// <exception cref="ArgumentNullException" />
         public static byte[] GetBytes(string value)
         {
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
             using (var ms = new MemoryStream())
             {
                 foreach (char c in value)
@@ -38,9 +41,12 @@ namespace PlainNamedBinaryTag.Utils
         /// <summary>
         /// Decode JvmModifiedUtf8
         /// </summary>
+        /// <exception cref="ArgumentNullException" />
         /// <exception cref="FormatException" />
         public static string GetString(byte[] bytes)
         {
+            if (bytes is null)
+                throw new ArgumentNullException(nameof(bytes));
             var result = new StringBuilder(bytes.Length);
             for (int i = 0; i < bytes.Length; i++)
             {

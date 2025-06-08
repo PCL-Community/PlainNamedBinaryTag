@@ -22,16 +22,16 @@ namespace PlainNamedBinaryTag.Utils
         protected NbtBinaryWriter() { }
 
         /// <summary>NotSupported</summary>
-        public override void Write(char ch) { throw new NotSupportedException(); }
+        public override void Write(char ch) => throw new NotSupportedException();
 
         /// <summary>NotSupported</summary>
-        public override void Write(char[] chars) { throw new NotSupportedException(); }
+        public override void Write(char[] chars) => throw new NotSupportedException();
 
         /// <summary>NotSupported</summary>
-        public override void Write(char[] chars, int index, int count) { throw new NotSupportedException(); }
+        public override void Write(char[] chars, int index, int count) => throw new NotSupportedException();
 
         /// <summary>NotSupported</summary>
-        public override void Write(decimal value) { throw new NotSupportedException(); }
+        public override void Write(decimal value) => throw new NotSupportedException();
 
         public override void Write(byte[] buffer)
         {
@@ -137,6 +137,8 @@ namespace PlainNamedBinaryTag.Utils
 
         public override void Write(string value)
         {
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
             var buffer = JvmModifiedUtf8.GetBytes(value);
             if (buffer.Length > ushort.MaxValue)
                 throw new ArgumentException("String too long");
