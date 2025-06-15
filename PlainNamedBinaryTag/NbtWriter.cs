@@ -14,10 +14,10 @@ namespace PlainNamedBinaryTag
         private NbtBinaryWriter _writer;
 
         /// <summary>
-        /// Initialize a new instance of NbtWriter class with a file path
+        /// Initializes a new instance of <see cref="NbtWriter"/> class from a file path
         /// </summary>
         /// <param name="path">The path of the file to write</param>
-        /// <param name="compressed">Whether to compress the file content</param>
+        /// <param name="compressed">Whether to compress the file content using GZip</param>
         /// <exception cref="IOException">Fail to create output file stream</exception>
         public NbtWriter(string path, bool compressed)
         {
@@ -38,10 +38,10 @@ namespace PlainNamedBinaryTag
         }
 
         /// <summary>
-        /// Initialize a new instance of NbtWriter class with a stream
+        /// Initializes a new instance of <see cref="NbtWriter"/> class from a stream
         /// </summary>
         /// <param name="stream">The stream to write</param>
-        /// <param name="compressed">Whether to compress the stream content</param>
+        /// <param name="compressed">Whether to compress the stream content using GZip</param>
         public NbtWriter(Stream stream, bool compressed)
         {
             if (compressed)
