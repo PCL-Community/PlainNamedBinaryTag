@@ -13,47 +13,77 @@ namespace PlainNamedBinaryTag
         private NbtBinaryReader _reader;
 
         /// <summary>
-        /// Initialize a new instance of NbtReader class with a file path
+        /// Initializes a new instance of the <see cref="NbtReader"/> class from a file path
         /// </summary>
         /// <param name="path">The path of the file to read</param>
-        /// <param name="compressed">
-        /// Specifies whether to decompress the file content.
-        /// Set to null for automatic detection
-        /// </param>
+        /// <param name="compressed">Whether to decompress the file content using GZip</param>
+        /// <exception cref="ArgumentNullException" />
         /// <exception cref="FileNotFoundException" />
-        public NbtReader(string path, ref bool? compressed)
+        public NbtReader(string path, bool compressed)
         {
+            if (path is null)
+                throw new ArgumentNullException(nameof(path));
             if (!File.Exists(path))
-            {
                 throw new FileNotFoundException("NBT binary file is not found");
-            }
-            Stream stream = new FileStream(path, FileMode.Open, FileAccess.Read);
-            if (compressed == null)
-            {
-                compressed = Checker.IsStreamInGzipFormat(stream);
-            }
-            if ((bool)compressed)
-            {
-                stream = new GZipStream(stream, CompressionMode.Decompress);
-            }
-            _reader = new NbtBinaryReader(stream);
+
+            InitReader(new FileStream(path, FileMode.Open), compressed);
         }
 
         /// <summary>
-        /// Initialize a new instance of NbtReader class with a stream
+        /// Initializes a new instance of the <see cref="NbtReader"/> class from a file path
+        /// </summary>
+        /// <param name="path">The path of the file to read</param>
+        /// <param name="compressed">Output parameter indicating whether the file is GZip-compressed</param>
+        /// <exception cref="ArgumentNullException" />
+        /// <exception cref="FileNotFoundException" />
+        /// <exception cref="InvalidOperationException" />
+        /// <exception cref="IOException" />
+        public NbtReader(string path, out bool compressed)
+        {
+            if (path is null)
+                throw new ArgumentNullException(nameof(path));
+            if (!File.Exists(path))
+                throw new FileNotFoundException("NBT binary file is not found");
+
+            var stream = new FileStream(path, FileMode.Open);
+            compressed = Checker.IsStreamInGzipFormat(stream);
+            InitReader(stream, compressed);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="NbtReader"/> class from a stream
         /// </summary>
         /// <param name="stream">The stream to read</param>
-        /// <param name="compressed">
-        /// Specifies whether to decompress the stream content.
-        /// Set to null for automatic detection
-        /// </param>
-        public NbtReader(Stream stream, ref bool? compressed)
+        /// <param name="compressed">Whether to decompress the stream content using GZip</param>
+        /// <exception cref="ArgumentNullException" />
+        public NbtReader(Stream stream, bool compressed)
         {
-            if (compressed == null)
-            {
-                compressed = Checker.IsStreamInGzipFormat(stream);
-            }
-            if ((bool)compressed)
+            if (stream is null)
+                throw new ArgumentNullException(nameof(stream));
+
+            InitReader(stream, compressed);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="NbtReader"/> class from a stream
+        /// </summary>
+        /// <param name="stream">The stream to read</param>
+        /// <param name="compressed">Output parameter indicating whether the stream is GZip-compressed</param>
+        /// <exception cref="ArgumentNullException" />
+        /// <exception cref="InvalidOperationException" />
+        /// <exception cref="IOException" />
+        public NbtReader(Stream stream, out bool compressed)
+        {
+            if (stream is null)
+                throw new ArgumentNullException(nameof(stream));
+
+            compressed = Checker.IsStreamInGzipFormat(stream);
+            InitReader(stream, compressed);
+        }
+
+        private void InitReader(Stream stream, bool compressed)
+        {
+            if (compressed)
             {
                 stream = new GZipStream(stream, CompressionMode.Decompress);
             }
