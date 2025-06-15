@@ -18,10 +18,18 @@ namespace PlainNamedBinaryTag
         /// </summary>
         /// <param name="path">The path of the file to write</param>
         /// <param name="compressed">Whether to compress the file content</param>
-        /// <exception cref="IOException" />
+        /// <exception cref="IOException">Fail to create output file stream</exception>
         public NbtWriter(string path, bool compressed)
         {
-            Stream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            Stream stream;
+            try
+            {
+                stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException("Fail to create nbt output file stream", ex);
+            }
             if (compressed)
             {
                 stream = new GZipStream(stream, CompressionMode.Compress);

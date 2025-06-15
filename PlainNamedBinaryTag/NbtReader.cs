@@ -19,6 +19,7 @@ namespace PlainNamedBinaryTag
         /// <param name="compressed">Whether to decompress the file content using GZip</param>
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null"/></exception>
         /// <exception cref="FileNotFoundException">The specified file is not found</exception>
+        /// <exception cref="IOException">Fail to create input file stream</exception>
         public NbtReader(string path, bool compressed)
         {
             if (path is null)
@@ -26,7 +27,16 @@ namespace PlainNamedBinaryTag
             if (!File.Exists(path))
                 throw new FileNotFoundException("NBT binary file is not found");
 
-            InitReader(new FileStream(path, FileMode.Open), compressed);
+            Stream stream;
+            try
+            {
+                stream = new FileStream(path, FileMode.Open);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException("Fail to create nbt input file stream", ex);
+            }
+            InitReader(stream, compressed);
         }
 
         /// <summary>
@@ -36,8 +46,7 @@ namespace PlainNamedBinaryTag
         /// <param name="compressed">Output parameter indicating whether the file is GZip-compressed</param>
         /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null"/></exception>
         /// <exception cref="FileNotFoundException">The specified file is not found</exception>
-        /// <exception cref="InvalidOperationException">The specified file is not readable</exception>
-        /// <exception cref="IOException">Failed to check GZip header format</exception>
+        /// <exception cref="IOException">Fail to create input file stream</exception>
         public NbtReader(string path, out bool compressed)
         {
             if (path is null)
@@ -45,8 +54,16 @@ namespace PlainNamedBinaryTag
             if (!File.Exists(path))
                 throw new FileNotFoundException("NBT binary file is not found");
 
-            var stream = new FileStream(path, FileMode.Open);
-            compressed = Checker.IsStreamInGzipFormat(stream);
+            Stream stream;
+            try
+            {
+                stream = new FileStream(path, FileMode.Open);
+                compressed = Checker.IsStreamInGzipFormat(stream);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException("Fail to create nbt input file stream", ex);
+            }
             InitReader(stream, compressed);
         }
 
