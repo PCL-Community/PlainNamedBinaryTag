@@ -47,9 +47,9 @@ namespace PlainNamedBinaryTag
         /// Convert XML into NBT and write it into the stream
         /// </summary>
         /// <param name="value">The root XElement of XML tree</param>
-        /// <exception cref="ArgumentNullException" />
-        /// <exception cref="FormatException" />
-        /// <exception cref="IOException" />
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
+        /// <exception cref="FormatException">Xml data is invalid. Such as missing some attributes</exception>
+        /// <exception cref="IOException">An I/O error occurs during writing the destination stream</exception>
         public void WriteXmlNbt(XElement value)
         {
             if (value is null)

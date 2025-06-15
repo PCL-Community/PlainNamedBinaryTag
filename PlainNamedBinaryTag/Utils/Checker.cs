@@ -13,9 +13,9 @@ namespace PlainNamedBinaryTag.Utils
         /// <c>true</c> if the stream starts with the GZip magic number (0x1F 0x8B);<br/>
         /// otherwise, <c>false</c>
         /// </returns>
-        /// <exception cref="ArgumentNullException" />
-        /// <exception cref="InvalidOperationException" />
-        /// <exception cref="IOException" />
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
+        /// <exception cref="InvalidOperationException">The stream is not readable or not seekable</exception>
+        /// <exception cref="IOException">Failed to operate on the stream</exception>
         public static bool IsStreamInGzipFormat(Stream stream)
         {
             if (stream == null)

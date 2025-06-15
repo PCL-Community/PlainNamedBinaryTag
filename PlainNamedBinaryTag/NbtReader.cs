@@ -17,8 +17,8 @@ namespace PlainNamedBinaryTag
         /// </summary>
         /// <param name="path">The path of the file to read</param>
         /// <param name="compressed">Whether to decompress the file content using GZip</param>
-        /// <exception cref="ArgumentNullException" />
-        /// <exception cref="FileNotFoundException" />
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null"/></exception>
+        /// <exception cref="FileNotFoundException">The specified file is not found</exception>
         public NbtReader(string path, bool compressed)
         {
             if (path is null)
@@ -34,10 +34,10 @@ namespace PlainNamedBinaryTag
         /// </summary>
         /// <param name="path">The path of the file to read</param>
         /// <param name="compressed">Output parameter indicating whether the file is GZip-compressed</param>
-        /// <exception cref="ArgumentNullException" />
-        /// <exception cref="FileNotFoundException" />
-        /// <exception cref="InvalidOperationException" />
-        /// <exception cref="IOException" />
+        /// <exception cref="ArgumentNullException"><paramref name="path"/> is <see langword="null"/></exception>
+        /// <exception cref="FileNotFoundException">The specified file is not found</exception>
+        /// <exception cref="InvalidOperationException">The specified file is not readable</exception>
+        /// <exception cref="IOException">Failed to check GZip header format</exception>
         public NbtReader(string path, out bool compressed)
         {
             if (path is null)
@@ -55,7 +55,7 @@ namespace PlainNamedBinaryTag
         /// </summary>
         /// <param name="stream">The stream to read</param>
         /// <param name="compressed">Whether to decompress the stream content using GZip</param>
-        /// <exception cref="ArgumentNullException" />
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
         public NbtReader(Stream stream, bool compressed)
         {
             if (stream is null)
@@ -69,9 +69,9 @@ namespace PlainNamedBinaryTag
         /// </summary>
         /// <param name="stream">The stream to read</param>
         /// <param name="compressed">Output parameter indicating whether the stream is GZip-compressed</param>
-        /// <exception cref="ArgumentNullException" />
-        /// <exception cref="InvalidOperationException" />
-        /// <exception cref="IOException" />
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
+        /// <exception cref="InvalidOperationException">The stream is not readable</exception>
+        /// <exception cref="IOException">Failed to check GZip header format</exception>
         public NbtReader(Stream stream, out bool compressed)
         {
             if (stream is null)
@@ -99,8 +99,8 @@ namespace PlainNamedBinaryTag
         /// Note: Legal NBT files always use empty string as root tag name
         /// </param>
         /// <returns>Root XElement of the parsed XML tree</returns>
-        /// <exception cref="InvalidDataException" />
-        /// <exception cref="IOException" />
+        /// <exception cref="InvalidDataException">Nbt binary data is invalid</exception>
+        /// <exception cref="IOException">An I/O error occurs during reading the source stream</exception>
         public XElement ReadNbtAsXml(out NbtType resultType, bool hasName = true)
         {
             try

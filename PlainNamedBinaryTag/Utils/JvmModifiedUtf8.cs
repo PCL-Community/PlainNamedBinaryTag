@@ -9,7 +9,7 @@ namespace PlainNamedBinaryTag.Utils
         /// <summary>
         /// Encode JvmModifiedUtf8
         /// </summary>
-        /// <exception cref="ArgumentNullException" />
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/></exception>
         public static byte[] GetBytes(string value)
         {
             if (value is null)
@@ -41,7 +41,7 @@ namespace PlainNamedBinaryTag.Utils
         /// <summary>
         /// Decode JvmModifiedUtf8
         /// </summary>
-        /// <exception cref="ArgumentNullException" />
+        /// <exception cref="ArgumentNullException"><paramref name="bytes"/> is <see langword="null"/></exception>
         /// <exception cref="FormatException" />
         public static string GetString(byte[] bytes)
         {
