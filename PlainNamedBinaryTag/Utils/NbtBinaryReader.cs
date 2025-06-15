@@ -119,9 +119,18 @@ namespace PlainNamedBinaryTag.Utils
             return BitConverter.ToDouble(_buffer, 0);
         }
 
+        /// <inheritdoc />
+        /// <exception cref="InvalidDataException">Fail to decode bytes</exception>
         public override string ReadString()
         {
-            return JvmModifiedUtf8.GetString(ReadBytes(ReadUInt16()));
+            try
+            {
+                return JvmModifiedUtf8.GetString(ReadBytes(ReadUInt16()));
+            }
+            catch (InvalidDataException ex)
+            {
+                throw new InvalidDataException("Fail to decode jvm-modified utf8 string", ex);
+            }
         }
 
         protected override void FillBuffer(int numBytes)
