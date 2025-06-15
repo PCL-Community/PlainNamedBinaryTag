@@ -68,9 +68,9 @@ namespace PlainNamedBinaryTag
 
         private void WriteInt8ArrayNbtXml(XElement element)
         {
-            var childs = element.Elements().ToArray();
-            _writer.Write(childs.Length);
-            foreach (var child in childs)
+            var children = element.Elements().ToArray();
+            _writer.Write(children.Length);
+            foreach (var child in children)
             {
                 if (child.Name.LocalName != NbtType.TInt8.ToString())
                     throw new FormatException($"Illegal content of Int8Array: {child}");
@@ -87,9 +87,9 @@ namespace PlainNamedBinaryTag
 
         private void WriteInt32ArrayNbtXml(XElement element)
         {
-            var childs = element.Elements().ToArray();
-            _writer.Write(childs.Length);
-            foreach (var child in childs)
+            var children = element.Elements().ToArray();
+            _writer.Write(children.Length);
+            foreach (var child in children)
             {
                 if (child.Name.LocalName != NbtType.TInt32.ToString())
                     throw new FormatException($"Illegal content of Int32Array: {child}");
@@ -106,9 +106,9 @@ namespace PlainNamedBinaryTag
 
         private void WriteInt64ArrayNbtXml(XElement element)
         {
-            var childs = element.Elements().ToArray();
-            _writer.Write(childs.Length);
-            foreach (var child in childs)
+            var children = element.Elements().ToArray();
+            _writer.Write(children.Length);
+            foreach (var child in children)
             {
                 if (child.Name.LocalName != NbtType.TInt64.ToString())
                     throw new FormatException($"Illegal content of Int64Array: {child}");
@@ -130,12 +130,12 @@ namespace PlainNamedBinaryTag
                 contentType = ParseToNbtType(attr.Value);
             else
                 throw new FormatException("List tag must have 'ContentType' attribute represents the NbtType of its contents");
-            var childs = element.Elements().ToArray();
-            if (contentType == NbtType.TEnd && childs.Count() != 0)
+            var children = element.Elements().ToArray();
+            if (contentType == NbtType.TEnd && children.Count() != 0)
                 throw new FormatException("List tag with 'end' content-type cannot contain any child");
             WriteNbtType(contentType);
-            _writer.Write(childs.Length);
-            foreach (var child in childs)
+            _writer.Write(children.Length);
+            foreach (var child in children)
             {
                 if (child.Name.LocalName != contentType.ToString())
                     throw new FormatException("List tag can only contain content of the same type");
@@ -211,12 +211,12 @@ namespace PlainNamedBinaryTag
 
         #endregion
 
-        private bool _isDispoed = false;
+        private bool _isDisposed = false;
         public void Dispose()
         {
-            if (!_isDispoed)
+            if (!_isDisposed)
             {
-                _isDispoed = true;
+                _isDisposed = true;
                 _writer?.Dispose();
                 _writer = null;
             }

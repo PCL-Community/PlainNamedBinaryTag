@@ -61,7 +61,7 @@ namespace PlainNamedBinaryTag.Utils
                         throw new FormatException($"Expected 2-byte sequence but reached end of input");
                     byte b2 = bytes[++i];
                     if ((b2 & 0xC0) != 0x80) // 0b_10xx_xxxx
-                        throw new FormatException($"Continuation byte 0x{b2:X2} (at pisition {i}) does not match 0b_10xx_xxxx pattern");
+                        throw new FormatException($"Continuation byte 0x{b2:X2} (at position {i}) does not match 0b_10xx_xxxx pattern");
                     int code = ((b1 & 0x1F) << 6) | (b2 & 0x3F);
                     if (code < 0x80 && code != 0x00)
                         throw new FormatException($"Overlong encoding for code point 0x{code:X4} (at position {i-1})");

@@ -204,12 +204,12 @@ namespace PlainNamedBinaryTag
 
         #endregion
 
-        private bool _isDispoed = false;
+        private bool _isDisposed = false;
         public void Dispose()
         {
-            if (!_isDispoed)
+            if (!_isDisposed)
             {
-                _isDispoed = true;
+                _isDisposed = true;
                 _reader?.Dispose();
                 _reader = null;
             }
