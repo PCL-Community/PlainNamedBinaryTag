@@ -51,7 +51,7 @@ namespace PlainNamedBinaryTag.Utils
             for (int i = 0; i < bytes.Length; i++)
             {
                 byte b1 = bytes[i];
-                if (b1 < 0x7F) // one byte: 0b_0xxx_xxxx
+                if ((b1 & 0x80) == 0) // one byte: 0b_0xxx_xxxx
                 {
                     result.Append((char)b1);
                 }
