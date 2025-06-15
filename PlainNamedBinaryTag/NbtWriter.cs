@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 using PlainNamedBinaryTag.Utils;
 
@@ -75,7 +76,7 @@ namespace PlainNamedBinaryTag
                     throw new FormatException($"Illegal content of Int8Array: {child}");
                 try
                 {
-                    _writer.Write(sbyte.Parse(child.Value));
+                    _writer.Write(XmlConvert.ToSByte(child.Value));
                 }
                 catch (Exception ex) when (ex is ArgumentException || ex is FormatException || ex is OverflowException)
                 {
@@ -94,7 +95,7 @@ namespace PlainNamedBinaryTag
                     throw new FormatException($"Illegal content of Int32Array: {child}");
                 try
                 {
-                    _writer.Write(int.Parse(child.Value));
+                    _writer.Write(XmlConvert.ToInt32(child.Value));
                 }
                 catch (Exception ex) when (ex is ArgumentException || ex is FormatException || ex is OverflowException)
                 {
@@ -113,7 +114,7 @@ namespace PlainNamedBinaryTag
                     throw new FormatException($"Illegal content of Int64Array: {child}");
                 try
                 {
-                    _writer.Write(long.Parse(child.Value));
+                    _writer.Write(XmlConvert.ToInt64(child.Value));
                 }
                 catch (Exception ex) when (ex is ArgumentException || ex is FormatException || ex is OverflowException)
                 {
@@ -185,12 +186,12 @@ namespace PlainNamedBinaryTag
             {
                 switch (type)
                 {
-                    case NbtType.TInt8: _writer.Write(sbyte.Parse(content)); return;
-                    case NbtType.TInt16: _writer.Write(short.Parse(content)); return;
-                    case NbtType.TInt32: _writer.Write(int.Parse(content)); return;
-                    case NbtType.TInt64: _writer.Write(long.Parse(content)); return;
-                    case NbtType.TFloat32: _writer.Write(float.Parse(content)); return;
-                    case NbtType.TFloat64: _writer.Write(double.Parse(content)); return;
+                    case NbtType.TInt8: _writer.Write(XmlConvert.ToSByte(content)); return;
+                    case NbtType.TInt16: _writer.Write(XmlConvert.ToInt16(content)); return;
+                    case NbtType.TInt32: _writer.Write(XmlConvert.ToInt32(content)); return;
+                    case NbtType.TInt64: _writer.Write(XmlConvert.ToInt64(content)); return;
+                    case NbtType.TFloat32: _writer.Write(XmlConvert.ToSingle(content)); return;
+                    case NbtType.TFloat64: _writer.Write(XmlConvert.ToDouble(content)); return;
                     case NbtType.TString: _writer.Write(content); return;
                 }
             }

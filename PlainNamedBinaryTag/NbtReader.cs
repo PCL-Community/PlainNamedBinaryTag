@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Xml;
 using System.Xml.Linq;
 using PlainNamedBinaryTag.Utils;
 
@@ -95,21 +96,21 @@ namespace PlainNamedBinaryTag
         {
             var length = _reader.ReadInt32();
             for (int i = 0; i < length; i++)
-                element.Add(new XElement(NbtType.TInt8.ToString(), _reader.ReadSByte()));
+                element.Add(new XElement(NbtType.TInt8.ToString(), XmlConvert.ToString(_reader.ReadSByte())));
         }
 
         private void ReadInt32ArrayIntoXml(XElement element)
         {
             var length = _reader.ReadInt32();
             for (int i = 0; i < length; i++)
-                element.Add(new XElement(NbtType.TInt32.ToString(), _reader.ReadInt32()));
+                element.Add(new XElement(NbtType.TInt32.ToString(), XmlConvert.ToString(_reader.ReadInt32())));
         }
 
         private void ReadInt64ArrayIntoXml(XElement element)
         {
             var length = _reader.ReadInt32();
             for (int i = 0; i < length; i++)
-                element.Add(new XElement(NbtType.TInt64.ToString(), _reader.ReadInt64()));
+                element.Add(new XElement(NbtType.TInt64.ToString(), XmlConvert.ToString(_reader.ReadInt64())));
         }
 
         private void ReadListIntoXml(XElement element)
@@ -155,12 +156,12 @@ namespace PlainNamedBinaryTag
         {
             switch (type)
             {
-                case NbtType.TInt8: element.Add(_reader.ReadSByte()); break;
-                case NbtType.TInt16: element.Add(_reader.ReadInt16()); break;
-                case NbtType.TInt32: element.Add(_reader.ReadInt32()); break;
-                case NbtType.TInt64: element.Add(_reader.ReadInt64()); break;
-                case NbtType.TFloat32: element.Add(_reader.ReadSingle()); break;
-                case NbtType.TFloat64: element.Add(_reader.ReadDouble()); break;
+                case NbtType.TInt8: element.Add(XmlConvert.ToString(_reader.ReadSByte())); break;
+                case NbtType.TInt16: element.Add(XmlConvert.ToString(_reader.ReadInt16())); break;
+                case NbtType.TInt32: element.Add(XmlConvert.ToString(_reader.ReadInt32())); break;
+                case NbtType.TInt64: element.Add(XmlConvert.ToString(_reader.ReadInt64())); break;
+                case NbtType.TFloat32: element.Add(XmlConvert.ToString(_reader.ReadSingle())); break;
+                case NbtType.TFloat64: element.Add(XmlConvert.ToString(_reader.ReadDouble())); break;
                 case NbtType.TInt8Array: ReadInt8ArrayIntoXml(element); break;
                 case NbtType.TString: element.Add(_reader.ReadString()); break;
                 case NbtType.TList: ReadListIntoXml(element); break;
