@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PlainNamedBinaryTag.Utils
 {
-    public class JvmModifiedUtf8
+    public static class JvmModifiedUtf8
     {
         /// <summary>
         /// Encode JvmModifiedUtf8
