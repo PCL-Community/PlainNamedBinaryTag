@@ -113,9 +113,13 @@ namespace PlainNamedBinaryTag.Utils
         /// <exception cref="InvalidDataException">Fail to decode bytes</exception>
         public override string ReadString()
         {
+            var length = ReadUInt16();
+            var bytes = ReadBytes(length);
+            if (bytes.Length != length)
+                throw new EndOfStreamException();
             try
             {
-                return JvmModifiedUtf8.GetString(ReadBytes(ReadUInt16()));
+                return JvmModifiedUtf8.GetString(bytes);
             }
             catch (InvalidDataException ex)
             {

@@ -27,16 +27,14 @@ namespace PlainNamedBinaryTag
             if (!File.Exists(path))
                 throw new FileNotFoundException("NBT binary file is not found");
 
-            Stream stream;
             try
             {
-                stream = new FileStream(path, FileMode.Open);
+                InitReader(new FileStream(path, FileMode.Open), compressed);
             }
             catch (Exception ex)
             {
                 throw new IOException("Fail to create nbt input file stream", ex);
             }
-            InitReader(stream, compressed);
         }
 
         /// <summary>
@@ -54,17 +52,16 @@ namespace PlainNamedBinaryTag
             if (!File.Exists(path))
                 throw new FileNotFoundException("NBT binary file is not found");
 
-            Stream stream;
             try
             {
-                stream = new FileStream(path, FileMode.Open);
+                var stream = new FileStream(path, FileMode.Open);
                 compressed = Checker.IsStreamInGzipFormat(stream);
+                InitReader(stream, compressed);
             }
             catch (Exception ex)
             {
                 throw new IOException("Fail to create nbt input file stream", ex);
             }
-            InitReader(stream, compressed);
         }
 
         /// <summary>
@@ -73,10 +70,16 @@ namespace PlainNamedBinaryTag
         /// <param name="stream">The stream to read</param>
         /// <param name="compressed">Whether to decompress the stream content using GZip</param>
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
+        /// <exception cref="InvalidOperationException">The stream is not readable</exception>
         public NbtReader(Stream stream, bool compressed)
         {
             if (stream is null)
                 throw new ArgumentNullException(nameof(stream));
+
+            // Validate the stream's read functionality,
+            // or ArgumentException will be thrown when creating the BinaryReader / GZipStream
+            if (!stream.CanRead)
+                throw new InvalidOperationException("The input stream must be readable");
 
             InitReader(stream, compressed);
         }
@@ -88,13 +91,15 @@ namespace PlainNamedBinaryTag
         /// <param name="compressed">Output parameter indicating whether the stream is GZip-compressed</param>
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
         /// <exception cref="InvalidOperationException">The stream is not readable</exception>
-        /// <exception cref="IOException">Failed to check GZip header format</exception>
+        /// <exception cref="IOException">Fail to check GZip header format</exception>
         public NbtReader(Stream stream, out bool compressed)
         {
             if (stream is null)
                 throw new ArgumentNullException(nameof(stream));
 
+            // Throws InvalidOperationException and IOException
             compressed = Checker.IsStreamInGzipFormat(stream);
+
             InitReader(stream, compressed);
         }
 
@@ -104,6 +109,7 @@ namespace PlainNamedBinaryTag
             {
                 stream = new GZipStream(stream, CompressionMode.Decompress);
             }
+
             _reader = new NbtBinaryReader(stream);
         }
 
@@ -122,13 +128,21 @@ namespace PlainNamedBinaryTag
         {
             try
             {
+                // It throws an InvalidDataException here
+                // if source is not in gzip format, but we're using a decompress stream
                 resultType = ReadNbtType();
+
                 if (resultType == NbtType.TEnd)
                     throw new InvalidDataException("Cannot read 'end' tag to XML tree");
+                
+                // Read the root element's type & name
                 var result = new XElement(resultType.ToString());
                 if (hasName)
                     result.Add(new XAttribute("Name", _reader.ReadString()));
+
+                // Read the root element's payload
                 ReadDynamicIntoXml(resultType, result);
+
                 return result;
             }
             catch (EndOfStreamException ex)
@@ -143,21 +157,21 @@ namespace PlainNamedBinaryTag
         {
             var length = _reader.ReadInt32();
             for (int i = 0; i < length; i++)
-                element.Add(new XElement(NbtType.TInt8.ToString(), XmlConvert.ToString(_reader.ReadSByte())));
+                element.Add(new XElement(nameof(NbtType.TInt8), XmlConvert.ToString(_reader.ReadSByte())));
         }
 
         private void ReadInt32ArrayIntoXml(XElement element)
         {
             var length = _reader.ReadInt32();
             for (int i = 0; i < length; i++)
-                element.Add(new XElement(NbtType.TInt32.ToString(), XmlConvert.ToString(_reader.ReadInt32())));
+                element.Add(new XElement(nameof(NbtType.TInt32), XmlConvert.ToString(_reader.ReadInt32())));
         }
 
         private void ReadInt64ArrayIntoXml(XElement element)
         {
             var length = _reader.ReadInt32();
             for (int i = 0; i < length; i++)
-                element.Add(new XElement(NbtType.TInt64.ToString(), XmlConvert.ToString(_reader.ReadInt64())));
+                element.Add(new XElement(nameof(NbtType.TInt64), XmlConvert.ToString(_reader.ReadInt64())));
         }
 
         private void ReadListIntoXml(XElement element)
@@ -165,8 +179,11 @@ namespace PlainNamedBinaryTag
             var type = ReadNbtType();
             element.Add(new XAttribute("ContentType", type));
             var length = _reader.ReadInt32();
+
+            // Content type of empty list tag will be TEnd
             if (type == NbtType.TEnd && length != 0)
                 throw new InvalidDataException("List tag with 'end' content-type cannot contain any child");
+
             for (int i = 0; i < length; i++)
             {
                 var child = new XElement(type.ToString());
@@ -178,21 +195,31 @@ namespace PlainNamedBinaryTag
         private void ReadCompoundIntoXml(XElement element)
         {
             NbtType type;
+            
+            // Every element in compound tag has an unique name
             var entryNames = new HashSet<string>();
+            
             while ((type = ReadNbtType()) != NbtType.TEnd)
             {
                 var child = new XElement(type.ToString());
+                
+                // Read child's name and write it into 'Name' attribute
                 var name = _reader.ReadString();
                 if (!entryNames.Add(name))
                     throw new InvalidDataException($"Duplicate name '{name}' in compound tag");
                 child.Add(new XAttribute("Name", name));
+                
+                // Read child's payload
                 ReadDynamicIntoXml(type, child);
+                
                 element.Add(child);
             }
         }
 
         private NbtType ReadNbtType()
         {
+            // Read a byte and convert it into NbtType
+            // Throws InvalidDataException if the byte being read is not a valid NbtType
             var typedResult = (NbtType)_reader.ReadByte();
             if (!Enum.IsDefined(typeof(NbtType), typedResult))
                 throw new InvalidDataException($"Invalid NbtType: 0x{(byte)typedResult:X2}");
@@ -201,6 +228,7 @@ namespace PlainNamedBinaryTag
 
         private void ReadDynamicIntoXml(NbtType type, XElement element)
         {
+            // Read payload of specified tag type
             switch (type)
             {
                 case NbtType.TEnd: throw new InvalidDataException("Unexpected TEnd, this is an internal error");
@@ -223,6 +251,7 @@ namespace PlainNamedBinaryTag
         #endregion
 
         private bool _isDisposed;
+
         public void Dispose()
         {
             if (_isDisposed)
