@@ -15,7 +15,7 @@ namespace PlainNamedBinaryTag.Utils
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
         /// <exception cref="InvalidOperationException">The stream is not readable or not seekable</exception>
-        /// <exception cref="IOException">Failed to operate on the stream</exception>
+        /// <exception cref="IOException">Fail to operate on the stream</exception>
         public static bool IsStreamInGzipFormat(Stream stream)
         {
             if (stream == null)
@@ -29,13 +29,13 @@ namespace PlainNamedBinaryTag.Utils
             {
                 var curStreamPos = stream.Position;
                 var buffer = new byte[2];
-                stream.Read(buffer, 0, 2);
+                _ = stream.Read(buffer, 0, 2);
                 stream.Seek(curStreamPos, SeekOrigin.Begin);
                 return buffer[0] == 0x1f && buffer[1] == 0x8b;
             }
             catch (Exception ex)
             {
-                throw new IOException("Failed to check GZip header format", ex);
+                throw new IOException("Fail to check GZip header format", ex);
             }
         }
     }

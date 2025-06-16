@@ -9,9 +9,9 @@ namespace PlainNamedBinaryTag.Utils
     /// </summary>
     public class NbtBinaryWriter : BinaryWriter
     {
-        private const int _bufferCapacity = 8;
+        private const int BufferCapacity = 8;
 
-        private readonly byte[] _buffer = new byte[_bufferCapacity];
+        private readonly byte[] _buffer = new byte[BufferCapacity];
 
         public NbtBinaryWriter(Stream output) : base(output) { }
 
@@ -32,16 +32,6 @@ namespace PlainNamedBinaryTag.Utils
 
         /// <summary>NotSupported</summary>
         public override void Write(decimal value) => throw new NotSupportedException();
-
-        public override void Write(byte[] buffer)
-        {
-            base.Write(buffer);
-        }
-
-        public override void Write(byte[] buffer, int index, int count)
-        {
-            base.Write(buffer, index, count);
-        }
 
         public override void Write(bool value)
         {

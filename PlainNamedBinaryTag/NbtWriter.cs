@@ -139,7 +139,7 @@ namespace PlainNamedBinaryTag
             else
                 throw new FormatException("List tag must have 'ContentType' attribute represents the NbtType of its contents");
             var children = element.Elements().ToArray();
-            if (contentType == NbtType.TEnd && children.Count() != 0)
+            if (contentType == NbtType.TEnd && children.Length != 0)
                 throw new FormatException("List tag with 'end' content-type cannot contain any child");
             WriteNbtType(contentType);
             _writer.Write(children.Length);
@@ -183,6 +183,7 @@ namespace PlainNamedBinaryTag
         {
             switch (type)
             {
+                case NbtType.TEnd: throw new FormatException("Unexpected TEnd, this is an internal error");
                 case NbtType.TInt8Array: WriteInt8ArrayNbtXml(element); return;
                 case NbtType.TList: WriteListNbtXml(element); return;
                 case NbtType.TCompound: WriteCompoundNbtXml(element); return;
@@ -207,7 +208,7 @@ namespace PlainNamedBinaryTag
             {
                 throw new FormatException($"Invalid content of {type} tag: '{content}'", ex);
             }
-            throw new FormatException($"Invalid NbtType: 0x{(byte)type:X2}");
+            throw new FormatException($"Invalid NbtType: 0x{(byte)type:X2}, this is an internal error");
         }
 
         private static NbtType ParseToNbtType(string value)
@@ -219,15 +220,14 @@ namespace PlainNamedBinaryTag
 
         #endregion
 
-        private bool _isDisposed = false;
+        private bool _isDisposed;
         public void Dispose()
         {
-            if (!_isDisposed)
-            {
-                _isDisposed = true;
-                _writer?.Dispose();
-                _writer = null;
-            }
+            if (_isDisposed)
+                return;
+            _isDisposed = true;
+            _writer?.Dispose();
+            _writer = null;
         }
     }
 }

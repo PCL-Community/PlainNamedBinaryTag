@@ -9,9 +9,9 @@ namespace PlainNamedBinaryTag.Utils
     /// </summary>
     public class NbtBinaryReader : BinaryReader
     {
-        private const int _bufferCapacity = 8;
+        private const int BufferCapacity = 8;
 
-        private byte[] _buffer = new byte[_bufferCapacity];
+        private byte[] _buffer = new byte[BufferCapacity];
 
         public NbtBinaryReader(Stream input) : base(input) { }
 
@@ -36,16 +36,6 @@ namespace PlainNamedBinaryTag.Utils
 
         /// <summary>NotSupported</summary>
         public override decimal ReadDecimal() => throw new NotSupportedException();
-
-        public override int Read(byte[] buffer, int index, int count)
-        {
-            return base.Read(buffer, index, count);
-        }
-
-        public override byte[] ReadBytes(int count)
-        {
-            return base.ReadBytes(count);
-        }
 
         public override bool ReadBoolean()
         {
@@ -135,7 +125,7 @@ namespace PlainNamedBinaryTag.Utils
 
         protected override void FillBuffer(int numBytes)
         {
-            if (numBytes <= 0 || numBytes > _bufferCapacity)
+            if (numBytes <= 0 || numBytes > BufferCapacity)
                 throw new ArgumentOutOfRangeException(nameof(numBytes));
             int bytesRead = 0;
             do

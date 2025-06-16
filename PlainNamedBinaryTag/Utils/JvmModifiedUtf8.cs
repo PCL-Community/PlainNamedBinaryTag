@@ -58,7 +58,7 @@ namespace PlainNamedBinaryTag.Utils
                 else if ((b1 & 0xE0) == 0xC0) // two bytes: 0b_110x_xxxx
                 {
                     if (i + 1 >= bytes.Length)
-                        throw new InvalidDataException($"Expected 2-byte sequence but reached end of input");
+                        throw new InvalidDataException("Expected 2-byte sequence but reached end of input");
                     byte b2 = bytes[++i];
                     if ((b2 & 0xC0) != 0x80) // 0b_10xx_xxxx
                         throw new InvalidDataException($"Continuation byte 0x{b2:X2} (at position {i}) does not match 0b_10xx_xxxx pattern");
@@ -70,7 +70,7 @@ namespace PlainNamedBinaryTag.Utils
                 else if ((b1 & 0xF0) == 0xE0) // three bytes: 0b_1110_xxxx
                 {
                     if (i + 2 >= bytes.Length)
-                        throw new InvalidDataException($"Expected 3-byte sequence but reached end of input");
+                        throw new InvalidDataException("Expected 3-byte sequence but reached end of input");
                     byte b2 = bytes[++i];
                     byte b3 = bytes[++i];
                     if ((b2 & 0xC0) != 0x80 || (b3 & 0xC0) != 0x80)

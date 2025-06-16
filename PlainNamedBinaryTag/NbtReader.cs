@@ -203,6 +203,7 @@ namespace PlainNamedBinaryTag
         {
             switch (type)
             {
+                case NbtType.TEnd: throw new InvalidDataException("Unexpected TEnd, this is an internal error");
                 case NbtType.TInt8: element.Add(XmlConvert.ToString(_reader.ReadSByte())); break;
                 case NbtType.TInt16: element.Add(XmlConvert.ToString(_reader.ReadInt16())); break;
                 case NbtType.TInt32: element.Add(XmlConvert.ToString(_reader.ReadInt32())); break;
@@ -215,21 +216,20 @@ namespace PlainNamedBinaryTag
                 case NbtType.TCompound: ReadCompoundIntoXml(element); break;
                 case NbtType.TInt32Array: ReadInt32ArrayIntoXml(element); break;
                 case NbtType.TInt64Array: ReadInt64ArrayIntoXml(element); break;
-                default: throw new InvalidDataException($"Invalid NbtType: 0x{(byte)type:X2}");
+                default: throw new InvalidDataException($"Invalid NbtType: 0x{(byte)type:X2}, this is an internal error");
             }
         }
 
         #endregion
 
-        private bool _isDisposed = false;
+        private bool _isDisposed;
         public void Dispose()
         {
-            if (!_isDisposed)
-            {
-                _isDisposed = true;
-                _reader?.Dispose();
-                _reader = null;
-            }
+            if (_isDisposed)
+                return;
+            _isDisposed = true;
+            _reader?.Dispose();
+            _reader = null;
         }
     }
 }
