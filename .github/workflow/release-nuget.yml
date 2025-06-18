@@ -1,9 +1,8 @@
 name: Release NuGet Package
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published]
 
 jobs:
   build-and-publish:
@@ -24,7 +23,7 @@ jobs:
 
       - name: 设置 nuspec 版本号
         run: |
-          $version = "${{ github.ref_name }}"
+          $version = "${{ github.event.release.tag_name }}"
           $version = $version.TrimStart("v")
           (Get-Content PlainNamedBinaryTag.nuspec) -replace '<version>.*</version>', "<version>$version</version>" | Set-Content PlainNamedBinaryTag.nuspec
 
@@ -33,3 +32,10 @@ jobs:
 
       - name: 发布到 NuGet
         run: nuget push PlainNamedBinaryTag.*.nupkg -ApiKey ${{ secrets.NUGET_API_KEY }} -Source https://api.nuget.org/v3/index.json
+
+      - name: 上传到 GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: PlainNamedBinaryTag.*.nupkg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
