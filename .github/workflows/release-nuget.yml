@@ -22,7 +22,7 @@ jobs:
         run: nuget restore PlainNamedBinaryTag.sln
 
       - name: 构建项目
-        run: msbuild PlainNamedBinaryTag/PlainNamedBinaryTag.csproj /p:Configuration=Release /p:Platform="Any CPU"
+        run: msbuild PlainNamedBinaryTag.sln /p:Configuration=Release /p:Platform="Any CPU"
 
       - name: 设置 nuspec 版本号
         run: |
