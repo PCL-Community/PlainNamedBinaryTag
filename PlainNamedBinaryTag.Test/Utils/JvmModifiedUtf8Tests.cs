@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using System.IO;
 using System.Text;
 
 namespace PlainNamedBinaryTag.Utils.Tests
@@ -74,7 +74,7 @@ namespace PlainNamedBinaryTag.Utils.Tests
         public void Test_InvalidSequence()
         {
             var invalidData = new byte[] { 0xC0, 0x41 };
-            Assert.ThrowsException<FormatException>(() => JvmModifiedUtf8.GetString(invalidData));
+            Assert.ThrowsException<InvalidDataException>(() => JvmModifiedUtf8.GetString(invalidData));
         }
     }
 }

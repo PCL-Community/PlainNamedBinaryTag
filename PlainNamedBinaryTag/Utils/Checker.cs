@@ -1,36 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PlainNamedBinaryTag.Utils
 {
     public static class Checker
     {
+        /// <summary>
+        /// Determines whether the specified stream is in GZip format by checking the magic number header
+        /// </summary>
+        /// <param name="stream">The stream to check. Must be readable and seekable</param>
+        /// <returns>
+        /// <c>true</c> if the stream starts with the GZip magic number (0x1F 0x8B);<br/>
+        /// otherwise, <c>false</c>
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/></exception>
+        /// <exception cref="InvalidOperationException">The stream is not readable or not seekable</exception>
+        /// <exception cref="IOException">Fail to operate on the stream</exception>
         public static bool IsStreamInGzipFormat(Stream stream)
         {
             if (stream == null)
-            {
-                throw new ArgumentNullException("stream is null");
-            }
-            if (!stream.CanRead || !stream.CanSeek)
-            {
-                throw new ArgumentException("Can not determine the stream");
-            }
+                throw new ArgumentNullException(nameof(stream));
+            if (!stream.CanRead)
+                throw new InvalidOperationException("Stream must be readable");
+            if (!stream.CanSeek)
+                throw new InvalidOperationException("Stream must be seekable");
+
             try
             {
                 var curStreamPos = stream.Position;
-                var b1 = stream.ReadByte();
-                var b2 = stream.ReadByte();
+                var buffer = new byte[2];
+                _ = stream.Read(buffer, 0, 2);
                 stream.Seek(curStreamPos, SeekOrigin.Begin);
-                return b1 == 0x1f && b2 == 0x8b;
+                return buffer[0] == 0x1f && buffer[1] == 0x8b;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                throw new IOException("Fail to check GZip header format", ex);
             }
         }
     }

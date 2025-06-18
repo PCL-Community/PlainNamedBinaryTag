@@ -9,9 +9,9 @@ namespace PlainNamedBinaryTag.Utils
     /// </summary>
     public class NbtBinaryReader : BinaryReader
     {
-        private const int _bufferCapacity = 8;
+        private const int BufferCapacity = 8;
 
-        private byte[] _buffer = new byte[_bufferCapacity];
+        private byte[] _buffer = new byte[BufferCapacity];
 
         public NbtBinaryReader(Stream input) : base(input) { }
 
@@ -36,16 +36,6 @@ namespace PlainNamedBinaryTag.Utils
 
         /// <summary>NotSupported</summary>
         public override decimal ReadDecimal() => throw new NotSupportedException();
-
-        public override int Read(byte[] buffer, int index, int count)
-        {
-            return base.Read(buffer, index, count);
-        }
-
-        public override byte[] ReadBytes(int count)
-        {
-            return base.ReadBytes(count);
-        }
 
         public override bool ReadBoolean()
         {
@@ -119,14 +109,27 @@ namespace PlainNamedBinaryTag.Utils
             return BitConverter.ToDouble(_buffer, 0);
         }
 
+        /// <inheritdoc />
+        /// <exception cref="InvalidDataException">Fail to decode bytes</exception>
         public override string ReadString()
         {
-            return JvmModifiedUtf8.GetString(ReadBytes(ReadUInt16()));
+            var length = ReadUInt16();
+            var bytes = ReadBytes(length);
+            if (bytes.Length != length)
+                throw new EndOfStreamException();
+            try
+            {
+                return JvmModifiedUtf8.GetString(bytes);
+            }
+            catch (InvalidDataException ex)
+            {
+                throw new InvalidDataException("Fail to decode jvm-modified utf8 string", ex);
+            }
         }
 
         protected override void FillBuffer(int numBytes)
         {
-            if (numBytes <= 0 || numBytes > _bufferCapacity)
+            if (numBytes <= 0 || numBytes > BufferCapacity)
                 throw new ArgumentOutOfRangeException(nameof(numBytes));
             int bytesRead = 0;
             do
