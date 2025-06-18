@@ -15,11 +15,14 @@ jobs:
       - name: 设置 NuGet
         uses: NuGet/setup-nuget@v2
 
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v2
+
       - name: 恢复依赖
         run: nuget restore PlainNamedBinaryTag.sln
 
       - name: 构建项目
-        run: msbuild PlainNamedBinaryTag/PlainNamedBinaryTag.csproj /p:Configuration=Release
+        run: msbuild PlainNamedBinaryTag/PlainNamedBinaryTag.csproj /p:Configuration=Release /p:Platform="Any CPU"
 
       - name: 设置 nuspec 版本号
         run: |
