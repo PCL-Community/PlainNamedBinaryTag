@@ -8,6 +8,27 @@ using PlainNamedBinaryTag.Utils;
 
 namespace PlainNamedBinaryTag
 {
+    /// <summary>
+    /// Visual Basic cannot perform overload resolution between methods
+    /// that accept a <see langword="bool"/> parameter and
+    /// those that accept an <see langword="out"/> <see langword="bool"/> parameter,
+    /// so let's add a compatibility layer...
+    /// </summary>
+    public static class VbNbtReaderCreator
+    {
+        public static NbtReader FromPath(string path, bool compressed) =>
+            new NbtReader(path, compressed);
+
+        public static NbtReader FromPathAutoDetect(string path, out bool compressed) =>
+            new NbtReader(path, out compressed);
+
+        public static NbtReader FromStream(Stream stream, bool compressed) =>
+            new NbtReader(stream, compressed);
+
+        public static NbtReader FromStreamAutoDetect(Stream stream, out bool compressed) =>
+            new NbtReader(stream, out compressed);
+    }
+
     public class NbtReader : IDisposable
     {
         private NbtBinaryReader _reader;
