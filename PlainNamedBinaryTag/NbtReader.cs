@@ -151,7 +151,7 @@ namespace PlainNamedBinaryTag
             {
                 // It throws an InvalidDataException here
                 // if source is not in gzip format, but we're using a decompress stream
-                resultType = ReadNbtType();
+                resultType = _reader.ReadNbtType();
 
                 if (resultType == NbtType.TEnd)
                     throw new InvalidDataException("Cannot read 'end' tag to XML tree");
@@ -169,6 +169,64 @@ namespace PlainNamedBinaryTag
             catch (EndOfStreamException ex)
             {
                 throw new InvalidDataException("Unexpected end of NBT stream", ex);
+            }
+        }
+
+        /// <summary>
+        /// Read NBT stream and convert it into NbtNode tree with a filter <br/>
+        /// Create filters via <see cref="NodeFilter"/> helper
+        /// </summary>
+        /// <param name="nodeFilter">The filter to test each NbtNode</param>
+        /// <param name="hasName">
+        /// Whether to read the root tag's name<br/>
+        /// Note: Legal NBT files always use empty string as root tag name
+        /// </param>
+        /// <returns>An <see cref="IEnumerable{NbtNode}"/> contains result nbt nodes</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="nodeFilter"/> is <see langword="null"/></exception>
+        public IEnumerable<NbtNode> ReadNbtAsNode(NodeFilterDelegate nodeFilter, bool hasName = true)
+        {
+            if (nodeFilter is null)
+                throw new ArgumentNullException(nameof(nodeFilter));
+
+            // The stack contains all parents of the current node
+            var parents = new List<NbtContainerNode>();
+            NbtNode currentNode = NbtNode.Create(_reader.ReadNbtType());
+            if (hasName)
+                currentNode.Name = _reader.ReadString();
+            currentNode.ReadPayloadMetadata(_reader);
+            // Call the filter to the root node
+            var filterResult = nodeFilter.Invoke(parents, currentNode);
+            while (true)
+            {
+                switch (filterResult)
+                {
+                    case NodeFilterResult.Ignore:
+                        currentNode.SkipAllContents(_reader);
+                        break;
+                    case NodeFilterResult.Accept:
+                        currentNode.ReadAllContents(_reader);
+                        yield return currentNode;
+                        break;
+                    case NodeFilterResult.TestChildren:
+                        if (currentNode is NbtContainerNode container
+                            && container.TryGetNextSubNode(_reader, out var subNode))
+                        {
+                            // Push the current node into stack and work on its next sub node
+                            subNode.ReadPayloadMetadata(_reader);
+                            parents.Add(container);
+                            currentNode = subNode;
+                            // Call the filter to the sub node
+                            filterResult = nodeFilter.Invoke(parents, currentNode);
+                            continue;
+                        }
+                        break;
+                }
+                if (parents.Count == 0)
+                    yield break;
+                // Pop a parent node from the stack and work on its other children
+                currentNode = parents[parents.Count - 1];
+                parents.RemoveAt(parents.Count - 1);
+                filterResult = NodeFilterResult.TestChildren;
             }
         }
 
@@ -197,7 +255,7 @@ namespace PlainNamedBinaryTag
 
         private void ReadListIntoXml(XElement element)
         {
-            var type = ReadNbtType();
+            var type = _reader.ReadNbtType();
             element.Add(new XAttribute("ContentType", type));
             var length = _reader.ReadInt32();
 
@@ -220,7 +278,7 @@ namespace PlainNamedBinaryTag
             // Every element in compound tag has an unique name
             var entryNames = new HashSet<string>();
             
-            while ((type = ReadNbtType()) != NbtType.TEnd)
+            while ((type = _reader.ReadNbtType()) != NbtType.TEnd)
             {
                 var child = new XElement(type.ToString());
                 
@@ -235,16 +293,6 @@ namespace PlainNamedBinaryTag
                 
                 element.Add(child);
             }
-        }
-
-        private NbtType ReadNbtType()
-        {
-            // Read a byte and convert it into NbtType
-            // Throws InvalidDataException if the byte being read is not a valid NbtType
-            var typedResult = (NbtType)_reader.ReadByte();
-            if (!Enum.IsDefined(typeof(NbtType), typedResult))
-                throw new InvalidDataException($"Invalid NbtType: 0x{(byte)typedResult:X2}");
-            return typedResult;
         }
 
         private void ReadDynamicIntoXml(NbtType type, XElement element)

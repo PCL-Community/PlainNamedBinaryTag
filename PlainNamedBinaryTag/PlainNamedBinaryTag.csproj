@@ -41,8 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NbtNode.cs" />
     <Compile Include="NbtReader.cs" />
     <Compile Include="NbtWriter.cs" />
+    <Compile Include="NodeFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NbtType.cs" />
     <Compile Include="Utils\Checker.cs" />

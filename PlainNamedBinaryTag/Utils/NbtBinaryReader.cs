@@ -127,6 +127,19 @@ namespace PlainNamedBinaryTag.Utils
             }
         }
 
+        /// <summary>
+        /// Reads a <see cref="NbtType"/> from the current stream
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">The byte read is not a valid <see cref="NbtType"/> value</exception>
+        public NbtType ReadNbtType()
+        {
+            var result = ReadByte();
+            return Enum.IsDefined(typeof(NbtType), result)
+                ? (NbtType)result
+                : throw new InvalidDataException($"{result:X2} is not a valid {nameof(NbtType)} enum value");
+        }
+
         protected override void FillBuffer(int numBytes)
         {
             if (numBytes <= 0 || numBytes > BufferCapacity)
