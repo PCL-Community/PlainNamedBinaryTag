@@ -173,6 +173,16 @@ namespace PlainNamedBinaryTag
         }
 
         /// <summary>
+        /// Read NBT stream and convert it into NbtNode tree
+        /// </summary>
+        /// <param name="hasName">
+        /// Whether to read the root tag's name<br/>
+        /// Note: Legal NBT files always use empty string as root tag name
+        /// </param>
+        /// <returns>An <see cref="IEnumerable{NbtNode}"/> contains result nbt nodes</returns>
+        public IEnumerable<NbtNode> ReadNbtAsNode(bool hasName = true) => ReadNbtAsNode(NodeFilter.None, hasName);
+
+        /// <summary>
         /// Read NBT stream and convert it into NbtNode tree with a filter <br/>
         /// Create filters via <see cref="NodeFilter"/> helper
         /// </summary>

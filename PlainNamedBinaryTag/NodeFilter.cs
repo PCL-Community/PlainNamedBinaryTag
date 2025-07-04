@@ -13,6 +13,8 @@ namespace PlainNamedBinaryTag
 
     public static class NodeFilter
     {
+        public static NodeFilterDelegate None => (_, __) => NodeFilterResult.Accept;
+
         public static NodeFilterDelegate MatchAbsPath(params string[] path)
         {
             return (parents, node) =>
