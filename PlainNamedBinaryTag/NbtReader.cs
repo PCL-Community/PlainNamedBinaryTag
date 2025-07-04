@@ -210,16 +210,12 @@ namespace PlainNamedBinaryTag
             {
                 switch (filterResult)
                 {
-                    case NodeFilterResult.Ignore:
-                        currentNode.SkipAllContents(_reader);
-                        break;
                     case NodeFilterResult.Accept:
                         currentNode.ReadAllContents(_reader);
                         yield return currentNode;
                         break;
-                    case NodeFilterResult.TestChildren:
-                        if (currentNode is NbtContainerNode container
-                            && container.TryGetNextSubNode(_reader, out var subNode))
+                    case NodeFilterResult.TestChildren when currentNode is NbtContainerNode container:
+                        if (container.TryGetNextSubNode(_reader, out var subNode))
                         {
                             // Push the current node into stack and work on its next sub node
                             subNode.ReadPayloadMetadata(_reader);
@@ -229,6 +225,9 @@ namespace PlainNamedBinaryTag
                             filterResult = nodeFilter.Invoke(parents, currentNode);
                             continue;
                         }
+                        break;
+                    default: // Ignore, or TestChildren when current node is not container
+                        currentNode.SkipAllContents(_reader);
                         break;
                 }
                 if (parents.Count == 0)
